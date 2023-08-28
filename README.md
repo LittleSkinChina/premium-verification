@@ -6,17 +6,17 @@
 
 ## 使用方法
 
-请先在 Microsoft Entra ID（就是以前的 Azure Active Directory）中创建一个应用，生成 Client Secret，添加两条回调 URL（请将 example.com 换成你自己的域名）：
+请先在 Microsoft Entra ID（就是以前的 Azure Active Directory）中创建一个应用，生成 Client Secret，启用 ID 令牌，添加两条回调 URI（请将 example.com 换成你自己的域名）：
 
-- 登录回调 URL：`https://example.com/microsoftoidc/callback`
-- 正版验证回调 URL：`https://example.com/user/premium/callback`
+- 登录回调 URI：`https://example.com/microsoftoidc/callback`
+- 正版验证回调 URI：`https://example.com/user/premium/callback`
 
 然后在 .env 文件中添加以下条目：
 
 - `MICROSOFT_CLIENT_ID`：应用的 Client ID
 - `MICROSOFT_CLIENT_SECRET`：应用的 Client Secret
-- `MICROSOFT_LOGIN_REDIRECT_URL`：上面添加的「登录回调 URL」
-- `MICROSOFT_PREMIUM_REDIRECT_URL`：上面添加的「正版验证回调 URL」
+- `MICROSOFT_LOGIN_REDIRECT_URI`：上面添加的「登录回调 URI」
+- `MICROSOFT_PREMIUM_REDIRECT_URI`：上面添加的「正版验证回调 URI」
 
 ## 未实现的功能
 
