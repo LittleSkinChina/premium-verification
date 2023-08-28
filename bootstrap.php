@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 return function (Dispatcher $events, Filter $filter, Request $request) {
 
     $config = [
-        'client_id' => env('MICROSOFT_CLIENT_KEY'),
+        'client_id' => env('MICROSOFT_CLIENT_ID'),
         'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
         'tenant' => 'consumers',
     ];
