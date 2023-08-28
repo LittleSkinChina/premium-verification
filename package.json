@@ -10,12 +10,12 @@
       "blessing-skin-server": "^6",
       "oauth": "^1.0.0"
   },
-  "conflicts": {
-    "mojang-verification": "*",
-    "oauth-microsoft-live": "*"
-  },
   "enchants": {
     "config": "Configuration",
+    "conflicts": {
+      "mojang-verification": "*",
+      "oauth-microsoft-live": "*"
+    },
     "icon": {
         "fa": "dragon",
         "bg": "success"
