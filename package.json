@@ -1,0 +1,24 @@
+{
+  "name": "premium-verification",
+  "version": "1.0.0",
+  "title": "LittleSkin\\PremiumVerification::general.title",
+  "description": "LittleSkin\\PremiumVerification::general.description",
+  "author": "LittleSkin",
+  "url": "https://github.com/LittleSkinChina",
+  "namespace": "LittleSkin\\PremiumVerification",
+  "require": {
+      "blessing-skin-server": "^6",
+      "oauth": "^1.0.0"
+  },
+  "conflicts": {
+    "mojang-verification": "*",
+    "oauth-microsoft-live": "*"
+  },
+  "enchants": {
+    "config": "Configuration",
+    "icon": {
+        "fa": "dragon",
+        "bg": "success"
+    }
+  }
+}

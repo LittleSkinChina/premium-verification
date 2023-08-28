@@ -1,0 +1,41 @@
+title: 正版验证 & 绑定
+description: |
+  如果你拥有正版 Minecraft 账号，可点击下面的按钮进行验证并绑定。如果验证成功，你将获得正版账号对应的角色，并可获得 :score 积分。
+
+  绑定正版 Minecraft 账号要求先绑定其所属的 Microsoft 账户。如果你还没有绑定 Microsoft 账户，验证完成后将自动绑定。
+warning: <strong>正版账号绑定后不允许解绑</strong>，且 Microsoft 账户也不允许解绑。唯一的解绑方法是删除 LittleSkin 账号，请谨慎考虑后再绑定。
+verify: 验证并绑定
+
+error:
+  xbl-unavailable: Xbox Live 在你所在的国家或地区不可用。无法完成正版验证
+  adult-verification: 无法完成正版验证，你的账号需要在 Xbox 网站上进行成人验证
+  child-account: 你的 Microsoft 账户登记的年龄未满 18 岁且未加入家庭组或 Xbox 家长控制未授予多人游戏权限，无法进行正版验证，请检查你的 Microsoft 账户的年龄设置或加入家庭组并检查 Xbox 家长控制权限后再进行验证
+  xsts-unauthorized: XSTS 认证失败，详细信息：
+  other: Mojang 服务器返回错误，详细信息：
+not-purchased: 你没有购买正版 Minecraft，无法进行正版验证
+profile-not-found: 你拥有正版 Minecraft 但没有正版角色信息，无法进行正版验证，请先使用官方启动器启动至少一次游戏后在尝试正版验证
+wrong-msa: 你登录的 Microsoft 账户和你的 LittleSkin 绑定的 Microsoft 账户不一致，请使用你在 LittleSkin 绑定的 Microsoft 账户进行正版验证
+verified-by-other: 这个正版账号已经被其他 LittleSkin 账号绑定过了，请退出登录后使用 Microsoft 账户登录 LittleSkin 即可找回角色所在账号
+already-verified: 你已经绑定过正版账号了
+not-verified: 你还没有绑定过正版账号
+deleted: （已删除）
+
+premium-uuid: 正版角色 UUID
+premium-uuid-tip: 不是绑定角色的 UUID
+update-profile: 更新绑定角色
+verify-date: 绑定时间
+verified-player: 绑定角色
+verified-player-tip: 如需取回最新角色名或删除角色后需要重建角色，请点击下方的「:button」按钮
+
+notification:
+  title: 角色更名通知
+  content: |
+    Hi :nickname：
+
+    你收到这封邮件，是因为你在 LittleSkin 上创建了一个名为 :prev_name 的角色。
+
+    由于一位用户进行了正版验证，你的角色 :prev_name 已被更名为 :curr_name。
+
+    由此带来的不便，敬请谅解。
+
+    感谢你对 LittleSkin 的支持。

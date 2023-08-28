@@ -1,0 +1,39 @@
+<div class="card card-primary">
+  <div class="card-header">
+      <h3 class="card-title">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.title') }}</h3>
+  </div>
+  {% if microsoftoidc is defined %}
+  <div class="card-body p-0">
+      <table class="table">
+          <tbody>
+            <tr>
+                <th>{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.connect-date') }}</th>
+                <td>{{ microsoftoidc.date }}</td>
+            </tr>
+          </tbody>
+    </table>
+  </div>
+  <div class="card-footer">
+    {% if microsoftoidc.premium %}
+    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.cannot-disconnect') }}">
+      <a class="btn btn-warning disabled" role="button">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.disconnect') }}</a>
+    </span>
+    {% else %}
+    <a href="{{ url('microsoftoidc/disconnect') }}" class="btn bg-warning">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.disconnect') }}</a>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card-body p-0">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.not-connected') }}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  <div class="card-footer">
+    <a href="{{ url('microsoftoidc/connect') }}" class="btn bg-primary">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.connect') }}</a>
+  </div>
+  {% endif %}
+</div>

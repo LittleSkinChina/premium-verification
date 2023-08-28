@@ -1,0 +1,45 @@
+<div class="card card-primary card-outline">
+	<div class="card-header">
+		<h3 class="card-title">
+			{{ trans('LittleSkin\\PremiumVerification::premium.title') }}
+		</h3>
+	</div>
+  {% if premium is defined %}
+	<div class="card-body p-0">
+    <table class="table">
+      <tbody>
+        <tr>
+          <th>{{ trans('LittleSkin\\PremiumVerification::premium.premium-uuid') }} &nbsp;<i class="fa fa-question-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('LittleSkin\\PremiumVerification::premium.premium-uuid-tip') }}"></i></th>
+          <td><code>{{ premium.uuid }}</code></td>
+        </tr>
+        <tr>
+          <th>{{ trans('LittleSkin\\PremiumVerification::premium.verified-player') }} &nbsp;<i class="fa fa-question-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('LittleSkin\\PremiumVerification::premium.verified-player-tip', {button: trans('LittleSkin\\PremiumVerification::premium.update-profile')}) }}"></i></th>
+          <td>{{ premium.pid }}</td>
+        </tr>
+        <tr>
+          <th>{{ trans('LittleSkin\\PremiumVerification::premium.verify-date') }}</th>
+          <td>{{ premium.date }}</td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+	<div class="card-footer">
+      <form method="post" action="/user/premium/update">
+        {{ csrf_field() }}
+        <button type="submit" class="btn btn-primary" id="update-profile">{{ trans('LittleSkin\\PremiumVerification::premium.update-profile') }}</button>
+      </form>
+  </div>
+  {% else %}
+	<div class="card-body">
+		<div>
+			{{ trans('LittleSkin\\PremiumVerification::premium.description', {score: score})|nl2br }}<br />
+      <div class="alert alert-warning"> {{ trans('LittleSkin\\PremiumVerification::premium.warning')|raw }} </div>
+		</div>
+	</div>
+	<div class="card-footer">
+		<a class="btn btn-primary" href="/user/premium/verify">
+			{{ trans('LittleSkin\\PremiumVerification::premium.verify') }}
+		</a>
+	</div>
+  {% endif %}
+</div>

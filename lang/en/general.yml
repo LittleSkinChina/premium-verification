@@ -1,0 +1,9 @@
+title: 新·正版验证
+description: 为拥有正版账号的用户提供验证、绑定。
+pro: 正版
+
+error:
+  invalid-state: 验证参数无效，请重新请求验证
+  invalid-jwt: JWT 无效，请重新请求验证
+  jwt-exception: 无法解析 JWT，请联系站点管理员处理
+  jwK-exception: 无法解析 JWK，请联系站点管理员处理
