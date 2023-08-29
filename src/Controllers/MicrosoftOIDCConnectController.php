@@ -70,7 +70,8 @@ class MicrosoftOIDCConnectController extends Controller {
                 session()->put('microsoftoidc-inherit', $code);
                 return view('LittleSkin\PremiumVerification::inherit')->with('email', $remoteUser->email);
             }
-            abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.not-found')); // TODO: 引导注册
+            session()->put('msg', trans('LittleSkin\PremiumVerification::microsoftoidc.not-found'));
+            return redirect('/auth/login');
         }
     }
 

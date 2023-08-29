@@ -4,7 +4,7 @@ error: Microsoft 服务器返回错误，详细信息：
 connected-by-other: 这个 Microsoft 账户已经被其他 LittleSkin 账号绑定过了，请登出后使用 Microsoft 账户登录 LittleSkin 即可找回原先注册的账号
 not-connected: 你还没有绑定过 Microsoft 账户
 cannot-disconnect: 绑定正版 Minecraft 账号后不允许解绑 Microsoft 账户
-not-found: 你登录的 Microsoft 账户没有绑定过 LittleSkin 账号
+not-found: 你的 Microsoft 账户没有绑定过 LittleSkin 账号，请先登录或注册
 disconnect: 解绑
 connect-date: 绑定时间
 title: Microsoft 账户绑定
