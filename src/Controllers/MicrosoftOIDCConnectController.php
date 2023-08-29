@@ -60,7 +60,8 @@ class MicrosoftOIDCConnectController extends Controller {
 
             return redirect('/user');
         } else {
-            if($user = User::where('email', $remoteUser->email)->first()) {
+            $user = User::where('email', $remoteUser->email)->first();
+            if($user && !Connection::where('uid', $user->uid)->first()) {
                 $code = Str::random(8);
                 Cache::put('microsoftoidc-inherit-' . $code, [
                     'uid' => $user->uid,
