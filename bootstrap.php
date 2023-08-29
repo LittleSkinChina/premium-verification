@@ -65,6 +65,7 @@ return function (Dispatcher $events, Filter $filter, Request $request) {
                 Route::get('connect', 'MicrosoftOIDCConnectController@redirect');
                 Route::get('callback', 'MicrosoftOIDCConnectController@callback');
                 Route::get('disconnect', 'MicrosoftOIDCConnectController@disconnect');
+                Route::post('inherit', 'MicrosoftOIDCConnectController@inherit');
         });
     });
 };

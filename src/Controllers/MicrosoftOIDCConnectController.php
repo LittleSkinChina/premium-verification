@@ -7,10 +7,11 @@ use Auth;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Socialite\Facades\Socialite;
 use LittleSkin\PremiumVerification\Models\MicrosoftOIDCConnection as Connection;
 use LittleSkin\PremiumVerification\Models\Premium;
-
+use Str;
 
 class MicrosoftOIDCConnectController extends Controller {
 
@@ -59,6 +60,15 @@ class MicrosoftOIDCConnectController extends Controller {
 
             return redirect('/user');
         } else {
+            if($user = User::where('email', $remoteUser->email)->first()) {
+                $code = Str::random(8);
+                Cache::put('microsoftoidc-inherit-' . $code, [
+                    'uid' => $user->uid,
+                    'oid' => $remoteUser->id,
+                ], 300);
+                session()->put('microsoftoidc-inherit', $code);
+                return view('LittleSkin\PremiumVerification::inherit')->with('email', $remoteUser->email);
+            }
             abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.not-found')); // TODO: 引导注册
         }
     }
@@ -74,5 +84,25 @@ class MicrosoftOIDCConnectController extends Controller {
         } else {
             abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.not-connected'));
         }
+    }
+
+    public function inherit() {
+        $code = session()->get('microsoftoidc-inherit');
+        $cache = Cache::get('microsoftoidc-inherit-' . $code);
+        if($cache && !Connection::where('oid', $cache['oid'])->first()) {
+            $user = User::where('uid', $cache['uid'])->first();
+            if($user) {
+                Connection::create([
+                    'uid' => $cache['uid'],
+                    'oid' => $cache['oid'],
+                ]);
+                Auth::login($user);
+                Cache::delete('microsoftoidc-inherit-' . $code);
+                return redirect('/user');
+            }
+        }
+        Cache::delete('microsoftoidc-inherit-' . $code);
+        session()->put('msg', trans('auth.check.anonymous'));
+        return redirect('/auth/login');
     }
 }

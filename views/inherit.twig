@@ -1,0 +1,14 @@
+{% extends 'auth.base' %}
+
+{% block title %}{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.inherit.title') }}{% endblock %}
+
+{% block content %}
+<p class="login-box-msg">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.inherit.description', {email: email})|raw|nl2br }}</p>
+<main>
+<form method="post" action="/microsoftoidc/inherit">
+  {{ csrf_field() }}
+  <button class="btn btn-primary btn-block" type="submit">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.inherit.confirm') }}</button>
+  <a href="{{ url('auth/login') }}" class="btn btn-default btn-block">{{ trans('LittleSkin\\PremiumVerification::microsoftoidc.inherit.cancel') }}</a>
+</form>
+</main>
+{% endblock %}

@@ -9,3 +9,14 @@ disconnect: 解绑
 connect-date: 绑定时间
 title: Microsoft 账户绑定
 connect: 绑定
+
+inherit:
+  title: 账号引继
+  description: |
+    检测到你的 Microsoft 账户的邮箱：
+    <code>:email</code>
+    已注册过 LittleSkin
+
+    你可以直接登录并绑定
+  confirm: 快速登录并绑定
+  cancel: 取消快速登录
