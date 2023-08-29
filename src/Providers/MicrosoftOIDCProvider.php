@@ -8,7 +8,6 @@ use Firebase\JWT\JWK;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
-use Laravel\Socialite\Two\InvalidStateException;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
 
@@ -108,7 +107,6 @@ class MicrosoftOIDCProvider extends AbstractProvider {
         }
 
         if ($this->hasInvalidState()) {
-            throw new InvalidStateException();
             abort(403, trans('LittleSkin\PremiumVerification::general.error.invalid-state'));
         }
 
