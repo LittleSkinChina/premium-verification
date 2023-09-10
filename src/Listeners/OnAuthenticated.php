@@ -23,11 +23,6 @@ class OnAuthenticated {
 
     public function handle($event) {
         if($this->premium = Premium::where('uid', $event->user->uid)->first()) {
-            $this->filter->add('user_badges', function ($badges) {
-                $badges[] = ['text' => trans('LittleSkin\PremiumVerification::general.pro'), 'color' => 'purple'];
-                return $badges;
-            });
-
             View::composer('LittleSkin\PremiumVerification::premium', function ($view) {
                 $player = Player::where('pid', $this->premium->pid)->first();
 

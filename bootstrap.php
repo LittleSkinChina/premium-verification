@@ -5,6 +5,7 @@ use Blessing\Filter;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use LittleSkin\PremiumVerification\Models\Premium;
 
 return function (Dispatcher $events, Filter $filter, Request $request) {
 
@@ -47,6 +48,13 @@ return function (Dispatcher $events, Filter $filter, Request $request) {
         'user.deleting',
         'LittleSkin\PremiumVerification\Listeners\OnUserDeleting@handle'
     );
+
+    $filter->add('user_badges', function ($badges, $user) {
+        if(Premium::where('uid', $user->uid)->first()) {
+            $badges[] = ['text' => trans('LittleSkin\PremiumVerification::general.pro'), 'color' => 'purple'];
+        }
+        return $badges;
+    });
 
     Hook::addRoute(function () {
         Route::prefix('user/premium')
