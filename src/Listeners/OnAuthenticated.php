@@ -22,21 +22,20 @@ class OnAuthenticated {
     }
 
     public function handle($event) {
-        if($this->premium = Premium::where('uid', $event->user->uid)->first()) {
-            View::composer('LittleSkin\PremiumVerification::premium', function ($view) {
-                $player = Player::where('pid', $this->premium->pid)->first();
 
+        View::composer('LittleSkin\PremiumVerification::premium', function ($view) use ($event) {
+            if($this->premium = Premium::where('uid', $event->user->uid)->first()) {
+                $player = Player::where('pid', $this->premium->pid)->first();
                 $view->with('premium', [
                     'uuid' => preg_replace('/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/', '$1-$2-$3-$4-$5', $this->premium->uuid),
                     'pid' => $this->premium->pid . ($player ? ' (' . $player->name . ')' : trans('LittleSkin\PremiumVerification::premium.deleted')),
                     'date' => $this->premium->created_at,
                 ]);
-            });
-        } else {
-            View::composer('LittleSkin\PremiumVerification::premium', function ($view) {
+            } else {
                 $view->with('score', option('premium_verification_score_award', 0));
-            });
-        }
+            }
+
+        });
 
         switch($this->route) {
             case 'user/player':
