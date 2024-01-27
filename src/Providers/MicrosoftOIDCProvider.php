@@ -87,7 +87,7 @@ class MicrosoftOIDCProvider extends AbstractProvider {
         $user = [
             'openid' => $decoded->oid, // 这个 openid 是 OpenID Connect 的 oid，和 Graph API 拿到的 id 不一样
             'email' => $decoded->email,
-            'nickname' => $decoded->name,
+            // 'nickname' => $decoded->name,
         ];
 
         return $user;
@@ -96,7 +96,7 @@ class MicrosoftOIDCProvider extends AbstractProvider {
     protected function mapUserToObject(array $user) {
         return (new User())->setRaw($user)->map([
             'id' => $user['openid'],
-            'nickname' => $user['nickname'],
+            // 'nickname' => $user['nickname'],
             'email' => $user['email']
         ]);
     }
