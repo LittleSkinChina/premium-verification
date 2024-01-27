@@ -2,6 +2,7 @@
 
 use App\Services\Hook;
 use Blessing\Filter;
+use Blessing\Rejection;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -42,6 +43,11 @@ return function (Dispatcher $events, Filter $filter, Request $request) {
     $events->listen(
         Illuminate\Auth\Events\Authenticated::class,
         'LittleSkin\PremiumVerification\Listeners\OnAuthenticated@handle'
+    );
+
+    $events->listen(
+        'player.delete.attempt',
+        'LittleSkin\PremiumVerification\Listeners\OnPlayerDeleteAttempt@handle'
     );
 
     $events->listen(

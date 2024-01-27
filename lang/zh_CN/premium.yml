@@ -19,6 +19,7 @@ verified-by-other: 这个正版账号已经被其他 LittleSkin 账号绑定过�
 already-verified: 你已经绑定过正版账号了
 not-verified: 你还没有绑定过正版账号
 deleted: （已删除）
+player-cannot-be-deleted: 正版绑定角色不允许删除
 
 premium-uuid: 正版角色 UUID
 premium-uuid-tip: 不是绑定角色的 UUID
