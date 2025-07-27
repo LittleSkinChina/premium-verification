@@ -8,12 +8,14 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use LittleSkin\PremiumVerification\Providers\MicrosoftOIDCProvider as BaseProvider;
 use LittleSkin\PremiumVerification\Models\MicrosoftOIDCConnection as Connection;
 
-class PremiumProvider extends BaseProvider {
+class PremiumProvider extends BaseProvider
+{
     public const IDENTIFIER = 'premium';
 
     public const MOJANG_PUBLIC_KEY = <<<EOD
@@ -37,17 +39,18 @@ EOD;
 
     protected $key;
 
-    public function user() {
+    public function user()
+    {
         /* @var \Auth::User() $user */
         $user = auth()->user();
         parent::user();
         $connection = Connection::where('uid', $user->uid)->first();
 
-        if($connection && $connection->oid != $this->user->id) {
+        if ($connection && $connection->oid != $this->user->id) {
             abort(403, trans('LittleSkin\PremiumVerification::premium.wrong-msa'));
         }
 
-        if(Connection::where('oid', $this->user->id)->where('uid', '!=', $user->uid)->first()) {
+        if (Connection::where('oid', $this->user->id)->where('uid', '!=', $user->uid)->first()) {
             abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.connected-by-other'));
         }
 
@@ -56,7 +59,7 @@ EOD;
             'Properties' => [
                 'AuthMethod' => 'RPS',
                 'SiteName' => 'user.auth.xboxlive.com',
-                'RpsTicket' => 'd='.$this->user->token,
+                'RpsTicket' => 'd=' . $this->user->token,
             ],
             'RelyingParty' => 'http://auth.xboxlive.com',
             'TokenType' => 'JWT',
@@ -75,7 +78,7 @@ EOD;
             'TokenType' => 'JWT',
         ])->json();
 
-        if(Arr::exists($response, 'XErr')) { // https://wiki.vg/Microsoft_Authentication_Scheme#Obtain_XSTS_token_for_Minecraft
+        if (Arr::exists($response, 'XErr')) { // https://wiki.vg/Microsoft_Authentication_Scheme#Obtain_XSTS_token_for_Minecraft
             switch ($response['XErr']) {
                 case 2148916233: // The account doesn't have an Xbox account.
                     // This shouldn't happen with accounts that have purchased Minecraft with a Microsoft account,
@@ -90,9 +93,11 @@ EOD;
                 case 2148916238: // The account is a child (under 18) and cannot proceed unless the account is added to a Family by an adult.
                     abort(403, trans('LittleSkin\PremiumVerification::premium.error.child-account'));
                 default:
-                    abort(500, trans('LittleSkin\PremiumVerification::premium.error.xsts-unauthorized') .
-                    'XErr: ' . $response['XErr'] . ', Message: ' . $response['Message']
-                );
+                    abort(
+                        500,
+                        trans('LittleSkin\PremiumVerification::premium.error.xsts-unauthorized') .
+                            'XErr: ' . $response['XErr'] . ', Message: ' . $response['Message']
+                    );
             }
         }
 
@@ -100,7 +105,7 @@ EOD;
 
         // Authenticate with Minecraft
         $response = Http::post('https://api.minecraftservices.com/authentication/login_with_xbox', [
-            'identityToken' => 'XBL3.0 x='.$user_hash.';'.$xsts_token,
+            'identityToken' => 'XBL3.0 x=' . $user_hash . ';' . $xsts_token,
         ])->json();
 
         $accessToken = $response['access_token'];
@@ -111,7 +116,7 @@ EOD;
         $response = Http::withToken($accessToken)->get('https://api.minecraftservices.com/entitlements/mcstore')->json();
 
         try {
-            if(!count($response['items'])) {
+            if (!count($response['items'])) {
                 abort(403, trans('LittleSkin\PremiumVerification::premium.not-purchased'));
             }
 
@@ -120,32 +125,36 @@ EOD;
             $items = array_column($response['items'], 'name');
             $entitlements = array_column(JWT::decode($response['signature'], $this->key)->entitlements, 'name');
 
-            if(!(count($items) == count($entitlements) && array_diff($items, $entitlements) === array_diff($entitlements, $items))) {
+            if (!(count($items) == count($entitlements) && array_diff($items, $entitlements) === array_diff($entitlements, $items))) {
                 abort(403, trans('LittleSkin\PremiumVerification::general.error.invalid-jwt'));
             }
 
-            foreach($response['items'] as $item) {
-                if(JWT::decode($item['signature'], $this->key)->name != $item['name']) {
+            foreach ($response['items'] as $item) {
+                if (JWT::decode($item['signature'], $this->key)->name != $item['name']) {
                     abort(403, trans('LittleSkin\PremiumVerification::general.error.invalid-jwt'));
                 }
             }
 
             // Xbox Game Pass 用户也是正版用户
             $haystack = ['game_minecraft', 'product_minecraft', 'product_game_pass_pc', 'product_game_pass_ultimate'];
-            if(!count(array_intersect($haystack, $items))) {
+            if (!count(array_intersect($haystack, $items))) {
                 abort(403, trans('LittleSkin\PremiumVerification::premium.not-purchased'));
             }
         } catch (BeforeValidException | ExpiredException | SignatureInvalidException) {
             abort(403, trans('LittleSkin\PremiumVerification::general.error.invalid-jwt'));
-        } catch (\Exception) {
-            abort(500, trans('LittleSkin\PremiumVerification::general.error.jwt-exception'));
+        } catch (\Exception $e) {
+            if ($e instanceof HttpResponseException) {
+                throw $e;
+            }
+            abort(500, trans('LittleSkin\PremiumVerification::general.error.jwt-exception') . $e->getMessage());
         }
 
         // Get Minecraft Profile
         $response = Http::withToken($accessToken)->get('https://api.minecraftservices.com/minecraft/profile')->json();
 
-        if(Arr::exists($response, 'error')) {
-            if($response['errorType'] == 'NOT_FOUND') {
+        if (Arr::exists($response, 'error')) {
+            // logger("[premium-verification] " . json_encode($response));
+            if ($response['error'] == 'NOT_FOUND') {
                 abort(404, trans('LittleSkin\PremiumVerification::premium.profile-not-found'));
             } else {
                 abort(500, trans('LittleSkin\PremiumVerification::premium.error.other') . $response['errorMessage']);

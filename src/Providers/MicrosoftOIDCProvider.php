@@ -13,7 +13,8 @@ use SocialiteProviders\Manager\OAuth2\User;
 
 use Illuminate\Support\Facades\Cache;
 
-class MicrosoftOIDCProvider extends AbstractProvider {
+class MicrosoftOIDCProvider extends AbstractProvider
+{
 
     public const IDENTIFIER = 'MICROSOFTOIDC';
 
@@ -30,7 +31,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
      *
      * @return array
      */
-    protected function getJwks() {
+    protected function getJwks()
+    {
         return Cache::get('microsoftoidc-jwks', function () {
             $url = 'https://login.microsoftonline.com/consumers/discovery/v2.0/keys';
             $jwks = json_decode(file_get_contents($url), true);
@@ -48,11 +50,13 @@ class MicrosoftOIDCProvider extends AbstractProvider {
      * only with consumer Microsoft accounts.
      * https://wiki.vg/Microsoft_Authentication_Scheme
      */
-    protected function getAuthUrl($state) {
-        return $this->buildAuthUrlFromBase('https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize', $state);
+    protected function getAuthUrl($state)
+    {
+        return $this->buildAuthUrlFromBase('https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize', $state) . '&prompt=consent';
     }
 
-    protected function getTokenUrl() {
+    protected function getTokenUrl()
+    {
         return 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
     }
 
@@ -66,7 +70,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
      * 所以这里直接用了 id_token 里的用户信息。
      *
      */
-    protected function getUserByToken($id_token) {
+    protected function getUserByToken($id_token)
+    {
         JWT::$leeway = 30;
 
         try {
@@ -79,8 +84,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
             $decoded = JWT::decode($id_token, $jwks);
         } catch (BeforeValidException | ExpiredException | SignatureInvalidException $e) {
             abort(403, trans('LittleSkin\PremiumVerification::general.error.invalid-jwt'));
-        } catch (\Exception) {
-            abort(500, trans('LittleSkin\PremiumVerification::general.error.jwt-exception'));
+        } catch (\Exception $e) {
+            abort(500, trans('LittleSkin\PremiumVerification::general.error.jwt-exception') . $e->getMessage());
         }
 
 
@@ -93,7 +98,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
         return $user;
     }
 
-    protected function mapUserToObject(array $user) {
+    protected function mapUserToObject(array $user)
+    {
         return (new User())->setRaw($user)->map([
             'id' => $user['openid'],
             // 'nickname' => $user['nickname'],
@@ -101,7 +107,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
         ]);
     }
 
-    public function user() {
+    public function user()
+    {
         if ($this->user) {
             return $this->user;
         }
@@ -137,7 +144,8 @@ class MicrosoftOIDCProvider extends AbstractProvider {
      * 但即使这样，只要 scope 里包含 openid，换取 access_token 的时候的响应里也还是会返回 id_token。
      * Microsoft Identity Platform 的文档里没有提到这种情况，不保证以后会不会出问题
      */
-    protected function parseIdToken($body) {
+    protected function parseIdToken($body)
+    {
         return Arr::get($body, 'id_token');
     }
 
@@ -148,7 +156,4 @@ class MicrosoftOIDCProvider extends AbstractProvider {
             'scope'      => parent::formatScopes(parent::getScopes(), $this->scopeSeparator),
         ]);
     }
-
 }
-
-

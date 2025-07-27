@@ -1,6 +1,7 @@
 <?php
 
 namespace LittleSkin\PremiumVerification\Controllers;
+
 use App;
 use App\Models\User;
 use Auth;
@@ -13,23 +14,26 @@ use LittleSkin\PremiumVerification\Models\MicrosoftOIDCConnection as Connection;
 use LittleSkin\PremiumVerification\Models\Premium;
 use Str;
 
-class MicrosoftOIDCConnectController extends Controller {
+class MicrosoftOIDCConnectController extends Controller
+{
 
-    public function redirect() {
+    public function redirect()
+    {
         $user = auth()->user();
-        if(Connection::where('uid', $user->uid)->first()) {
+        if (Connection::where('uid', $user->uid)->first()) {
             abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.already-connected'));
         }
         return Socialite::driver('microsoftoidc')->redirect();
     }
 
-    public function callback(Dispatcher $dispatcher, Request $request) {
-        if($request->has('error')) {
+    public function callback(Dispatcher $dispatcher, Request $request)
+    {
+        if ($request->has('error')) {
             $error = $request->get('error');
-            if($error == 'access_denied') {
+            if ($error == 'access_denied') {
                 abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.authorize-cancelled'));
             } else {
-                abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.error').
+                abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.error') .
                     'error: ' . $error . ', error_description: ' . $request->get('error_description'));
             }
         }
@@ -39,18 +43,18 @@ class MicrosoftOIDCConnectController extends Controller {
         $remoteUser = Socialite::driver('microsoftoidc')->user();
         $connection = Connection::where('oid', $remoteUser->id)->first();
 
-        if($user) {
-            if($connection && $connection->uid != $user->uid) {
+        if ($user) {
+            if ($connection && $connection->uid != $user->uid) {
                 abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.connected-by-other'));
             }
-            if(Connection::where('uid', $user->uid)->first()) {
+            if (Connection::where('uid', $user->uid)->first()) {
                 abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.already-connected'));
             }
             Connection::create([
                 'uid' => $user->uid,
                 'oid' => $remoteUser->id,
             ]);
-            return redirect('/user');
+            return back(); //redirect('/user');
         } elseif ($connection) {
             $user = User::where('uid', $connection->uid)->first();
 
@@ -58,10 +62,10 @@ class MicrosoftOIDCConnectController extends Controller {
             Auth::login($user);
             $dispatcher->dispatch('auth.login.succeeded', [$user]);
 
-            return redirect('/user');
+            return redirect()->intended('/user'); //redirect('/user');
         } else {
             $user = User::where('email', $remoteUser->email)->first();
-            if($user && !Connection::where('uid', $user->uid)->first()) {
+            if ($user && !Connection::where('uid', $user->uid)->first()) {
                 $code = Str::random(8);
                 Cache::put('microsoftoidc-inherit-' . $code, [
                     'uid' => $user->uid,
@@ -75,12 +79,13 @@ class MicrosoftOIDCConnectController extends Controller {
         }
     }
 
-    public function disconnect() {
+    public function disconnect()
+    {
         $user = auth()->user();
-        if(Premium::where('uid', $user->uid)->first()) {
+        if (Premium::where('uid', $user->uid)->first()) {
             abort(403, trans('LittleSkin\PremiumVerification::microsoftoidc.cannot-disconnect'));
         }
-        if($connection = Connection::where('uid', $user->uid)->first()) {
+        if ($connection = Connection::where('uid', $user->uid)->first()) {
             $connection->delete();
             return redirect('/user/profile');
         } else {
@@ -88,12 +93,13 @@ class MicrosoftOIDCConnectController extends Controller {
         }
     }
 
-    public function inherit() {
+    public function inherit()
+    {
         $code = session()->get('microsoftoidc-inherit');
         $cache = Cache::get('microsoftoidc-inherit-' . $code);
-        if($cache && !Connection::where('oid', $cache['oid'])->first()) {
+        if ($cache && !Connection::where('oid', $cache['oid'])->first()) {
             $user = User::where('uid', $cache['uid'])->first();
-            if($user) {
+            if ($user) {
                 Connection::create([
                     'uid' => $cache['uid'],
                     'oid' => $cache['oid'],
